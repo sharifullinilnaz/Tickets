@@ -20,7 +20,12 @@ namespace TodoApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
+            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
             services.AddControllers();
             services.AddDbContext<TicketContext>(options =>
 
@@ -34,12 +39,11 @@ namespace TodoApi
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCors(builder => builder.AllowAnyOrigin());
             app.UseHttpsRedirection();
             app.UseRouting();
-
+            app.UseCors("MyPolicy");
+            app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
